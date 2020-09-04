@@ -1,2 +1,2 @@
 # processos_estocasticos
-Notes from online classes
+Notes from online classes using R.
