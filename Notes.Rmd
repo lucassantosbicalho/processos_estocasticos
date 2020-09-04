@@ -2,7 +2,9 @@
 title: "Processos Estocásticos (Online)"
 author: "Lucas Bicalho"
 date: "03/09/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -23,7 +25,11 @@ head(x, 10)
 # E = inteiros
 # T = {0, 1, 2, ...}
 sn <- cumsum(x)
-plot(sn, type = "l", main = "passeio aleatório simples", ylab = "Xn", xlab = "n")
+plot(sn, 
+     type = "l", 
+     main = "passeio aleatório simples", 
+     ylab = "Xn", 
+     xlab = "n")
 abline(h=0, col = 4)
 ```
 
@@ -70,10 +76,22 @@ for(i in 1:n){
 }
 
 par(mfrow = c(1,2))
-plot(mean_x, type = "l", main = "média processo bernoulli", xlab = "n", ylab = "E(Xn)", ylim = c(0,1), lwd = 2)
+plot(mean_x, 
+     type = "l", 
+     main = "média processo bernoulli", 
+     xlab = "n", 
+     ylab = "E(Xn)", 
+     ylim = c(0,1), 
+     lwd = 2)
 abline(h=p, col = 4)
 
-plot(var_x, type = "l", main = "variância processo bernoulli", xlab = "n", ylab = "Var(Xn)", ylim = c(0,1), lwd = 2)
+plot(var_x, 
+     type = "l", 
+     main = "variância processo bernoulli", 
+     xlab = "n", 
+     ylab = "Var(Xn)", 
+     ylim = c(0,1), 
+     lwd = 2)
 abline(h=p*(1-p), col = 4)
 par(mfrow = c(1,1))
 
@@ -101,10 +119,90 @@ x <- cumsum(x)
 s <- 1:n
 s <- x/s
 
-plot(s, type = "l", main = "Convergência de Sn/n", xlab = "n", ylab = "Sn/n", ylim = c(0,1), lwd = 2)
+plot(s, 
+     type = "l",
+     main = "Convergência de Sn/n",
+     xlab = "n", 
+     ylab = "Sn/n", 
+     ylim = c(0,1), 
+     lwd = 2)
 abline(h=p-e, col = 4)
 abline(h=p+e, col = 4)
 abline(h=p, col = 2)
 ```
 
+# Processo de Chegadas
+
+Seja $\{X_n\}_{n\geq1}$ o processo de Bernoulli com parâmetro $p$. Para $n\geq1$ defina $T_n$ como o instante do n-ésimo sucesso.
+
+$\{T_n\}_{n\geq1}$ é chamado processo de chegadas.
+
+## Processo entre chegadas 
+
+Seja $W_n = T_n - T_{n-1}$. $W_n$ é o tempo entre o (n-1)-ésimo e o n-ésimo sucesso.
+
+O processo $\{W_n\}_{n\geq1}$ é chamado processo entre chegadas.
+
+
+### Teorema 
+
+  - $T_n \sim Pascal(n,p)$ 
+  
+    - $E(T_n) = \frac{n}{p}$
+  
+    - $Var(T_n) = \frac{n(1-p)}{p^2}$
+  
+  - $W_n \sim Geométrica(p)$
+  
+    - $E(W_n) = \frac{1}{p}$
+    
+    - $Var(W_n) = \frac{1-p}{p^2}$
+    
+
+Distribuição Pascal (Binomial negativa): número de tentativas necessárias para obter $k$ sucessos ao fim de $n$ ensaios de $Bernoulli(p)$.
+
+
+Distribuição Geométrica: número de tentativas necessárias para atingir o primeiro sucesso.
+    
+### Lei Forte dos Grandes Números
+$\frac{T_n}{n}$ converge quase que certamente para $\frac{1}{p}$
+Note que $\frac{T_n}{n} = \sum_{i=1}^{n} \frac{w_i}{n}$
+
+```{r}
+
+p <- 0.5
+n <- 10000
+e <- 0.5
+x <- purrr::rbernoulli(n = n, p = p)
+t <- c()
+k <- 1
+for(i in 1:n){
+  # t é o instante do i-ésimo sucesso
+  if(x[i]==TRUE){
+    t[k] <- i
+    k <- k + 1
+  }
+}
+
+head(t,10)
+```
+Ou seja, precisou-se de `r t[10]` ensaios de Bernoulli para obter-se o 10º sucesso.
+
+Para $p=0.5$ temos $\frac{1}{p} = \frac{1}{0.5} = 2$.
+```{r}
+
+tt <- 1:length(t)
+tt <- t/tt
+
+plot(tt, 
+     type = "l",
+     main = "Convergência de Tn/n -> 1/p",
+     xlab = "n", 
+     ylab = "Tn/n",
+     lwd = 2, 
+     ylim = c((1/p)-1, (1/p)+1))
+abline(h=(1/p)-e, col = 4)
+abline(h=(1/p)+e, col = 4)
+abline(h=1/p, col = 2)
+```
 
