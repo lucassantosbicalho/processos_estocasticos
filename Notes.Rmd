@@ -1,0 +1,110 @@
+---
+title: "Processos Estocásticos (Online)"
+author: "Lucas Bicalho"
+date: "03/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Passeio Aleatório Simples
+Espaço de estados discreto a tempo discreto
+
+```{r}
+#p(x=1)=p e p(x=-1)=1-p
+p <- 0.5
+q <- 1-p
+n <- 1000
+x <- ifelse(purrr::rbernoulli(n = n, p = p) == TRUE, 1, -1)
+head(x, 10)
+#{Sn, n>=0} = X1+ X2 + ... + Xn
+# E = inteiros
+# T = {0, 1, 2, ...}
+sn <- cumsum(x)
+plot(sn, type = "l", main = "passeio aleatório simples", ylab = "Xn", xlab = "n")
+abline(h=0, col = 4)
+```
+
+# Processo de Contagem
+Espaço de estado discreto a tempo discreto ou tempo contínuo
+```{r}
+#{Xt, t>=0}
+# X0 = 0
+# Xt >= 0
+# Xt é valor inteiro
+# Xs <= Xt se s < t
+# Xt - Xs = n° de ocorrências em (s,t]
+
+
+```
+
+# Processo de Poisson
+
+# Processo de Bernoulli
+$\{X_n\}_{n\geq1}$ processo a tempo discreto tal que as variáveis aleatórias $X_i$ são i.i.d. com $P(X_n=1)=p$ e $P(X_n=0)=1-p$ é chamado processo de Bernoulli com parâmetro p.
+
+Para cada realização do processo o valor é TRUE ou FALSE.
+
+```{r}
+p <- 0.5
+n <- 1000
+x <- purrr::rbernoulli(n = n, p = p)
+head(x, 10)
+mean(x)
+
+var(x) 
+p*(1-p)
+```
+
+Vamos observar como se comportam a média e variância no decorrer dos ensaios
+
+```{r}
+mean_x <- c()
+var_x <- c()
+
+for(i in 1:n){
+  mean_x[i] <- mean(x[1:i])
+  var_x[i] <- var(x[1:i])
+}
+
+par(mfrow = c(1,2))
+plot(mean_x, type = "l", main = "média processo bernoulli", xlab = "n", ylab = "E(Xn)", ylim = c(0,1), lwd = 2)
+abline(h=p, col = 4)
+
+plot(var_x, type = "l", main = "variância processo bernoulli", xlab = "n", ylab = "Var(Xn)", ylim = c(0,1), lwd = 2)
+abline(h=p*(1-p), col = 4)
+par(mfrow = c(1,1))
+
+```
+
+
+# Processo Binomial
+
+Se definirmos $\{S_n\}_{n\geq1}$ como $S_n = \sum_{i=1}^{n} X_i$, $i=1,\ldots,n$ com $n\geq1$, temos que 
+
+  -$S_n \sim Bin(n,p)$
+  
+  -$E(S_n) = np$
+  
+  -$Var(S_n) = np(1-p)$
+
+A Lei Forte dos Grandes Números diz que $S_n/n$ converge quase certamente para $p$. Onde $S_n/n \in [p-\epsilon; p+\epsilon]$
+
+```{r}
+p <- 0.5
+n <- 1000
+e <- 0.05
+x <- purrr::rbernoulli(n = n, p = p)
+x <- cumsum(x)
+s <- 1:n
+s <- x/s
+
+plot(s, type = "l", main = "Convergência de Sn/n", xlab = "n", ylab = "Sn/n", ylim = c(0,1), lwd = 2)
+abline(h=p-e, col = 4)
+abline(h=p+e, col = 4)
+abline(h=p, col = 2)
+```
+
+
